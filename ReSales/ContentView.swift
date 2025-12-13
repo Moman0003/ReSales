@@ -1,21 +1,20 @@
-//
-//  ContentView.swift
-//  ReSales
-//
-//  Created by Moman Shafique on 13/12/2025.
-//
-
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var authVM: AuthViewModel
+    @StateObject private var itemsVM: ItemsViewModel
+
+    init() {
+        _authVM = StateObject(wrappedValue: AuthViewModel(repo: AuthRepository()))
+        _itemsVM = StateObject(wrappedValue: ItemsViewModel(repo: ItemRepository()))
+    }
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello")
+        if authVM.isLoggedIn {
+            WelcomeView(itemsVM: itemsVM, authVM: authVM)
+        } else {
+            HomeView(itemsVM: itemsVM, authVM: authVM)
         }
-        .padding()
     }
 }
 
