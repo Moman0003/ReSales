@@ -5,7 +5,6 @@ struct ProfileView: View {
 
     @StateObject var itemsVM: ItemsViewModel
     @StateObject var authVM: AuthViewModel
-
     @State private var showAddSheet = false
 
     private var myItems: [SalesItem] {
@@ -43,13 +42,6 @@ struct ProfileView: View {
             }
             .navigationTitle("Min profil")
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                    }
-                }
 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

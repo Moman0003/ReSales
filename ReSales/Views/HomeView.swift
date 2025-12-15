@@ -48,12 +48,40 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 10) {
-                Picker("", selection: $sortIndex) {
-                    Label("Nyeste", systemImage: "clock").tag(0)
-                    Label("Pris ↑", systemImage: "arrow.up").tag(1)
-                    Label("Pris ↓", systemImage: "arrow.down").tag(2)
+
+                // Filter (venstre) + Sortering (midt) + Reload (hoejre)
+                HStack(spacing: 10) {
+                    Button {
+                        showFilterSheet = true
+                    } label: {
+                        Image(systemName: "line.3.horizontal.decrease.circle")
+                            .font(.headline)
+                            .frame(width: 36, height: 36)
+                            .background(.thinMaterial)
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Filtre")
+
+                    Picker("", selection: $sortIndex) {
+                        Label("Nyeste", systemImage: "clock").tag(0)
+                        Label("Pris ↑", systemImage: "arrow.up").tag(1)
+                        Label("Pris ↓", systemImage: "arrow.down").tag(2)
+                    }
+                    .pickerStyle(.segmented)
+
+                    Button {
+                        Task { await itemsVM.loadItems() }
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.headline)
+                            .frame(width: 36, height: 36)
+                            .background(.thinMaterial)
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Opdatér")
                 }
-                .pickerStyle(.segmented)
                 .padding(.horizontal)
 
                 if itemsVM.isLoading {
@@ -145,6 +173,7 @@ struct HomeView: View {
             }
             .navigationTitle("ReSales")
             .toolbar {
+                // AEndret top hoejre: kun login ikon
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {
                         LoginView(authVM: authVM)
@@ -152,24 +181,10 @@ struct HomeView: View {
                         Image(systemName: "person.crop.circle.badge.plus")
                     }
                 }
-
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showFilterSheet = true } label: {
-                        Image(systemName: "line.3.horizontal.decrease.circle")
-                    }
-                }
-
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { Task { await itemsVM.loadItems() } } label: {
-                        Image(systemName: "arrow.clockwise")
-                    }
-                }
             }
             .searchable(text: $searchText, prompt: "Søg i annoncer")
             .task { await itemsVM.loadItems() }
-            .sheet(isPresented: $showFilterSheet) {
-                filterSheet
-            }
+            .sheet(isPresented: $showFilterSheet) { filterSheet }
         }
     }
 
